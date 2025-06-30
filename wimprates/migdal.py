@@ -22,6 +22,7 @@ from scipy.integrate import dblquad
 from scipy.interpolate import interp1d
 
 import wimprates as wr
+from wimprates.data.migdal.Cox.cos_wrapper import cox_migdal_model
 
 
 export, __all__ = wr.exporter()
@@ -188,7 +189,7 @@ def get_migdal_transitions_probability_iterators(
             shells.append(Shell(state, material, binding_e, model, p))
 
     elif model == "Cox":
-        element = wr.cox_migdal_model(
+        element = cox_migdal_model(
             material,
             dipole=dipole,
             dark_matter=dark_matter,
@@ -353,7 +354,7 @@ def rate_migdal(
                 material=material,
             ),
             lambda _: wr.v_max(t, halo_model.v_esc),
-            **kwargs,
+            # **kwargs,
         )[0]
 
         result += r
