@@ -33,7 +33,7 @@ spin_isotopes = [
 ]
 
 # Load spin-dependent structure functions
-s_data = wr.load_pickle('sd/structure_f_erec_xe.pkl')
+s_data = wr.load_pickle('sd/structure_f_erec_xe_hoferichter_et_al.pkl') # Update form factor
 s_energies = s_data['_energies']
 structure_functions = {}
 # Don't use k, v; dangerous globals...

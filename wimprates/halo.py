@@ -129,7 +129,7 @@ def v_max(t=None, v_esc=None, v_0=None):
     # args do not change value when you do a
     # reset_unit so this is necessary to avoid errors
     if t is None:
-        return v_esc + v_earth(t)
+        return v_esc + v_earth(t, v_0=v_0)
     else:
         return v_esc + np.sum(earth_velocity(t, v_0=v_0) ** 2) ** 0.5
 
