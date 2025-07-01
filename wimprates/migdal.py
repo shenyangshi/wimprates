@@ -22,7 +22,7 @@ from scipy.integrate import dblquad
 from scipy.interpolate import interp1d
 
 import wimprates as wr
-from wimprates.data.migdal.Cox.cos_wrapper import cox_migdal_model
+from wimprates.data.migdal.Cox.cox_wrapper import cox_migdal_model
 
 
 export, __all__ = wr.exporter()
