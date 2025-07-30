@@ -139,7 +139,7 @@ def get_migdal_transitions_probability_iterators(
     if considered_shells is None:
         considered_shells = _default_shells(material)
 
-    shells = []
+    shells = dict()
     if model == "Ibe":
         df_migdal_material = pd.read_csv(
             wr.data_file("migdal/Ibe/migdal_transition_%s.csv" % material)
@@ -186,7 +186,7 @@ def get_migdal_transitions_probability_iterators(
                 fill_value=0,
             )
 
-            shells.append(Shell(state, material, binding_e, model, p))
+            shells[state] = Shell(state, material, binding_e, model, p)
 
     elif model == "Cox":
         element = cox_migdal_model(
@@ -200,8 +200,7 @@ def get_migdal_transitions_probability_iterators(
             if not any(fnmatch(state, take) for take in considered_shells):
                 continue
 
-            shells.append(
-                Shell(
+            shells[state] = Shell(
                     state,
                     material,
                     binding_e * nu.keV,
@@ -213,7 +212,6 @@ def get_migdal_transitions_probability_iterators(
                         dipole=dipole,
                     ),
                 )
-            )
     else:
         raise ValueError("Only 'Cox' and 'Ibe' models have been implemented")
 
@@ -297,10 +295,12 @@ def rate_migdal(
     result = 0
     for shell in shells:
 
+        _shell_function = shells[shell]
+
         def diff_rate(v, erec):
             # Observed energy = energy of emitted electron
             #                 + binding energy of state
-            eelec = w - shell.binding_e - include_approx_nr * erec * q_nr
+            eelec = w - _shell_function.binding_e - include_approx_nr * erec * q_nr
             if eelec < 0:
                 return 0
 
@@ -324,7 +324,7 @@ def rate_migdal(
                     * (nu.me * (2 * erec / wr.mn(material)) ** 0.5 / (nu.eV / nu.c0))
                     ** 2
                     / (2 * np.pi)
-                    * shell(eelec)
+                    * _shell_function(eelec)
                 )
             elif migdal_model == "Cox":
                 return (
@@ -339,7 +339,7 @@ def rate_migdal(
                     )
                     * v
                     * halo_model.velocity_dist(v, t)
-                    * shell(eelec, erec)
+                    * _shell_function(eelec, erec)
                 )
 
         # Note dblquad expects the function to be f(y, x), not f(x, y)...
